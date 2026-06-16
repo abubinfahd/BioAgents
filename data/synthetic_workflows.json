@@ -1,0 +1,68 @@
+[
+  {
+    "domain": "RNA-seq analysis",
+    "query": "How do I identify differentially expressed genes from my RNA-seq FASTQ files?",
+    "input": "RNA-seq FASTQ files",
+    "gold_workflow": [
+      "FastQC",
+      "STAR",
+      "featureCounts",
+      "DESeq2"
+    ]
+  },
+  {
+    "domain": "RNA-seq analysis",
+    "query": "Please provide a standard RNA-seq pipeline.",
+    "input": "RNA-seq FASTQ files",
+    "gold_workflow": [
+      "FastQC",
+      "STAR",
+      "featureCounts",
+      "DESeq2"
+    ]
+  },
+  {
+    "domain": "Variant Calling",
+    "query": "I have Whole Genome Sequencing data, how to get VCF?",
+    "input": "Whole Genome Sequencing",
+    "gold_workflow": [
+      "FastQC",
+      "BWA",
+      "Samtools",
+      "GATK",
+      "VCF Output"
+    ]
+  },
+  {
+    "domain": "Variant Calling",
+    "query": "What is the pipeline for variant calling on WGS?",
+    "input": "Whole Genome Sequencing",
+    "gold_workflow": [
+      "FastQC",
+      "BWA",
+      "Samtools",
+      "GATK",
+      "VCF Output"
+    ]
+  },
+  {
+    "domain": "Protein Analysis",
+    "query": "How can I perform phylogenetic analysis from protein sequences?",
+    "input": "Protein sequences",
+    "gold_workflow": [
+      "BLAST",
+      "Clustal Omega",
+      "Phylogenetic Analysis"
+    ]
+  },
+  {
+    "domain": "Protein Analysis",
+    "query": "Protein sequence phylogeny pipeline?",
+    "input": "Protein sequences",
+    "gold_workflow": [
+      "BLAST",
+      "Clustal Omega",
+      "Phylogenetic Analysis"
+    ]
+  }
+]
