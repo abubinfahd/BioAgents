@@ -1,50 +1,55 @@
 # BioAgents++: Reliable Scientific Workflow Generation using Verification Agents
 
-**Subtitle**: Extending BioAgents with a verification and uncertainty-aware reasoning layer.
+## Abstract
+Recent advancements in large language models (LLMs) have led to the development of multi-agent systems tailored for complex reasoning in specialized domains. The original BioAgents framework demonstrated the capability of small, localized models augmented with Retrieval-Augmented Generation (RAG) and LoRA to design bioinformatics workflows. However, as task complexity scales, workflow generation models exhibit increased hallucination rates and often drop essential tools. In this extension, **BioAgents++**, we propose a novel Verification Agent and an Uncertainty-Aware Confidence Estimator to robustly evaluate generated pipelines against ontological rules.
 
-## Overview
-BioAgents++ builds upon the foundational concept of the BioAgents paper by introducing a **Verification Agent** and a **Confidence Estimator**. The core research question this project addresses is:
+## 1. Introduction
+Bioinformatics pipelines require precise execution of sequential data processing tools (e.g., Data QC → Alignment → Variant Calling → Annotation). Missing a step or hallucinatory tool insertions compromise scientific validity. While previous research avoided giant, generalized LLMs in favor of localized, fine-tuned agent swarms, those systems critically lacked an independent verification layer.
 
-*Can a verification agent reduce workflow hallucinations in complex bioinformatics tasks?*
+### 1.1 The Research Problem
+We hypothesize that a dedicated Verification Agent, distinct from the workflow generator, can drastically reduce error rates. Thus, our core research question is: *Can explicit verification reduce hallucinated scientific workflows?*
 
-## High-Level Architecture
+### 1.2 Research Motivation
+**What limitation of BioAgents am I addressing?**
+The original BioAgents architecture consists of a Genomics Agent, a Workflow Agent, and a Reasoning Agent. A critical limitation of this design is that there is **no strong code execution feedback** and **no verifier agent**. When the Workflow Agent generates a pipeline, it is assumed to be correct, despite empirical evidence showing that performance drops significantly as workflow complexity increases. By adding an explicit Verification Agent, we address this critical vulnerability, ensuring workflows are audited for missing or invalid tools before execution.
 
-The framework consists of sequential agents that process user requests into reliable workflows:
+## 2. Methodology
+
+### 2.1 Agent Architecture Diagram
+The extended architecture integrates seamlessly into the existing pipeline, creating a strict verification bottleneck prior to final execution:
 
 ```mermaid
-flowchart TD
-    A[User Query] --> B(Planner Agent)
-    B --> C(Tool Selection Agent)
-    C --> D(Workflow Generator Agent)
-    D --> E{Verification Agent}
-    E --> F[Confidence Estimator]
-    F --> G[Final Workflow Output]
+flowchart LR
+    A[Generator] --> B[Verifier]
+    B --> C[Confidence Estimator]
 ```
 
-### Agents
-1. **Planner Agent**: Interprets the user's natural language query and maps it to a specific bioinformatics domain (e.g., RNA-seq, Variant Calling).
-2. **Tool Selection Agent**: Retrieves relevant tools for the identified domain.
-3. **Workflow Generator Agent**: Sequences the selected tools into an execution pipeline.
-4. **[NEW] Verification Agent**: Evaluates the generated workflow against standard domain rules to detect missing or hallucinated steps.
-5. **[NEW] Confidence Estimator**: Calculates a confidence score based on the output of the Verification Agent.
+### 2.2 Agent Roles
+The extended architecture, known as BioAgents++, is built on a cascade of simulated language agents:
+1. **Planner Agent**: Deconstructs the query into a known task category.
+2. **Tool Selection Agent**: Identifies tools relevant to the domain.
+3. **Workflow Generator**: Outputs the ordered pipeline.
+4. **Verification Agent [Novel Contribution]**: Scans the output against hard-coded domain logic or verified standards (e.g., ensuring a quantification step follows RNA alignment).
+5. **Confidence Estimator [Novel Contribution]**: Generates a confidence score between 0.0 and 1.0 based on verification outcomes.
 
-## Setup Instructions
+### 2.3 Synthetic Workflow Dataset
+To measure performance without relying on expensive live-execution environments, we utilize synthetic datasets covering domains such as RNA-seq analysis, Variant Calling, and Protein Phylogeny.
 
-This project requires Python 3.
+## 3. Evaluation Metrics
+We rely on standard precision-recall metrics adapted for workflow structures:
+- **Workflow Accuracy**: Evaluated using an F1 score against a gold standard.
+- **Workflow Completeness**: The ratio of detected required steps to total required steps.
+- **Hallucination Rate**: The percentage of generated tools not present in the gold standard.
 
-1. **Clone the repository** or navigate to the `bioagents-plus-plus` folder.
-2. **Activate the Virtual Environment**:
-   * Windows: `.\venv\Scripts\activate`
-   * macOS/Linux: `source venv/bin/activate`
-3. **Run Experiments**:
-   Navigate to the `notebooks/` directory and open `experiments.ipynb` using Jupyter Notebook, or run the cells in your IDE (like VSCode).
-   ```bash
-   pip install jupyter
-   jupyter notebook notebooks/experiments.ipynb
-   ```
+## 4. Expected Results
+We anticipate that by introducing the verification layer, workflow accuracy will increase significantly. Preliminary heuristic runs suggest that catching "missing" and "hallucinated" steps via a secondary agent allows the system to flag unreliable workflows, boosting the system's overall reliability score from baseline estimations.
 
-## Evaluation Metrics
-The framework is evaluated using the `evaluation/metrics.py` module on synthetic workflow data:
-- **Workflow Accuracy**: F1 score comparing the generated pipeline to a gold-standard pipeline.
-- **Workflow Completeness**: Detected Steps / Required Steps.
-- **Hallucination Rate**: Invalid Tools / Generated Tools.
+### 4.1 Results Table
+| Workflow Type | Baseline | With Verification |
+|---------------|----------|-------------------|
+| Missing Step Detection | No | Yes |
+| Invalid Tool Detection | No | Yes |
+| Confidence Estimation  | No | Yes |
+
+## 5. Conclusion
+Adding a Verification Agent to scientific multi-agent systems aligns directly with the goal of reliable AI. Future work will involve closing the feedback loop so the generator can automatically fix the workflow based on the verifier's feedback, moving from confidence estimation to active self-correction.
